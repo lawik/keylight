@@ -22,6 +22,7 @@ defmodule Keylight.MixProject do
   defp deps do
     [
       {:mdns_lite, "~> 0.8.3"},
+      {:jason, "~> 1.2"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]

@@ -44,21 +44,88 @@ defmodule Keylight do
     end)
   end
 
-  def info(%{host: host, port: port}) do
-    :inets.start()
-    url = to_charlist("http://#{host}:#{port}/elgato/accessory-info")
-    {:ok, {_, _, body}} = :httpc.request(:get, {url, []}, [], [])
-    body
+  def info(%{host: _} = device) do
+    get(device, "elgato/accessory-info")
   end
 
   def info(devices) when is_map(devices) do
+    multi(devices, &info/1)
+  end
+
+  def status(%{host: _} = device) do
+    get(device, "elgato/lights")
+  end
+
+  def status(devices) when is_map(devices) do
+    multi(devices, &status/1)
+  end
+
+  def on(%{host: _} = device) do
+    put(device, "elgato/lights", %{"numberOfLights" => 1, "lights" => [%{"on" => 1}]})
+  end
+
+  def on(devices) when is_map(devices) do
+    multi(devices, &on/1)
+  end
+
+  def off(%{host: _} = device) do
+    put(device, "elgato/lights", %{"numberOfLights" => 1, "lights" => [%{"on" => 0}]})
+  end
+
+  def off(devices) when is_map(devices) do
+    multi(devices, &off/1)
+  end
+
+  @options [:on, :brightness, :temperature]
+  def set(%{host: _} = device, opts) do
+    data = opts
+          |> Enum.map(fn {key, value} ->
+            if key in @options do
+              if is_integer(value) do
+                {to_string(key), value}
+              else
+                raise "Bad value #{value} for option '#{key}', should be an integer"
+              end
+            else
+              raise "Bad option '#{key}'"
+            end
+          end)
+          |> Map.new()
+    put(device, "elgato/lights", %{"numberOfLights" => 1, "lights" => [data]})
+  end
+
+  def set(devices, opts) when is_map(devices) do
+    multi(devices, fn device ->
+      set(device, opts)
+    end)
+  end
+
+  defp build_url(device, path) do
+    to_charlist("http://#{device.host}:#{device.port}/#{path}")
+  end
+
+  defp multi(devices, fun) do
     devices
     |> Enum.map(fn {key, value} ->
-      {key, info(value)}
+      {key, fun.(value)}
     end)
     |> Map.new()
   end
 
+  defp get(device, path) do
+    :inets.start()
+    url = build_url(device, path)
+    {:ok, {_, _, body}} = :httpc.request(:get, {url, []}, [], [])
+    Jason.decode(to_string(body))
+  end
+
+  defp put(device, path, data) do
+    :inets.start()
+    url = build_url(device, path)
+    body = Jason.encode!(data)
+    {:ok, {_, _, body}} = :httpc.request(:put, {url, [], 'application/json', body}, [], [])
+    Jason.decode(to_string(body))
+  end
 
   defp srv_to_host({_, _, _, host}), do: to_string(host)
   defp srv_to_port({_, _, port, _}), do: port
