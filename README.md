@@ -1,21 +1,27 @@
 # Keylight
 
-**TODO: Add description**
+- Discovery
+- Changing settings
+- NOT initial setup
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `keylight` to your list of dependencies in `mix.exs`:
+Add to deps, not currently on hex:
 
 ```elixir
 def deps do
   [
-    {:keylight, "~> 0.1.0"}
+    {:keylight, github: "lawik/keylight"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/keylight](https://hexdocs.pm/keylight).
+Usage:
 
+```elixir
+devices = Keylight.discover()
+Keylight.info(devices)
+
+Keylight.on(devices)
+Keylight.off(devices)
+Keylight.status(devices)
+Keylight.set(devices, on: 1, brightness: 20, temperature: 200)
+```
