@@ -22,7 +22,7 @@ defmodule Keylight do
     query_mdns()
     :timer.sleep(@default_timeout)
     case check_mdns() do
-      %{additional: []} -> []
+      %{additional: []} -> %{}
       %{additional: records} -> records_to_devices(records)
     end
   end
