@@ -3,24 +3,14 @@ defmodule Keylight do
   Documentation for `Keylight`.
   """
 
-  @doc """
-  Hello world.
+  require MdnsLite.DNS
 
-  ## Examples
-
-      iex> Keylight.hello()
-      :world
-
-  """
-
-
-
-  @query_all {:dns_query, '_services._dns-sd._udp.local', :ptr, :in}
-  @query_devices {:dns_query, '_elg._tcp.local', :ptr, :in}
+  @query_devices MdnsLite.DNS.dns_query(class: :in, type: :ptr, domain: '_elg._tcp.local')
   @default_timeout 2000
+
   def discover(timeout \\ @default_timeout) do
     query_mdns()
-    :timer.sleep(@default_timeout)
+    :timer.sleep(timeout)
     case check_mdns() do
       %{additional: []} -> %{}
       %{additional: records} -> records_to_devices(records)

@@ -1,4 +1,4 @@
 %{
   "jason": {:hex, :jason, "1.2.2", "ba43e3f2709fd1aa1dce90aaabfd039d000469c05c56f0b8e31978e03fa39052", [:mix], [{:decimal, "~> 1.0 or ~> 2.0", [hex: :decimal, repo: "hexpm", optional: true]}], "hexpm", "18a228f5f0058ee183f29f9eae0805c6e59d61c3b006760668d8d18ff0d12179"},
-  "mdns_lite": {:git, "https://github.com/nerves-networking/mdns_lite.git", "d0374df15e7b6ca1556ec9d55fad6182b2ccf8ea", [branch: "optional-vintage_net"]},
+  "mdns_lite": {:hex, :mdns_lite, "0.8.6", "cafdcde5be222d151342629637ec3178619090e4668a57c8cfdc67d970d0b268", [:mix], [{:vintage_net, "~> 0.7", [hex: :vintage_net, repo: "hexpm", optional: true]}], "hexpm", "7b6fcf2d45be8823492b77380f69510327d3a98f6b17d403f355daf31e1ac961"},
 }
