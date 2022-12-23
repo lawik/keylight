@@ -91,10 +91,7 @@ defmodule Keylight do
   end
 
   defp build_url(device, path) do
-    # NOTE: Ideally httpc could do this mapping for us but I'm encountering an
-    # ** error: {:error, {:failed_connect, [{:to_address, {'elgato-key-light-98b1.local', 9123}}, {:inet, [:inet], :nxdomain}]}}
-    {:ok, ip} = MdnsLite.gethostbyname(device.host)
-    ["http://", :inet.ntoa(ip), ":#{device.port}/#{path}"]
+    to_charlist("http://#{device.host}:#{device.port}/#{path}")
   end
 
   defp multi(devices, fun) do

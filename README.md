@@ -14,7 +14,13 @@ def deps do
 end
 ```
 
-Usage:
+## Initial configuration
+
+You need to ensure that mdns is properly set up and configured on your system. On mac mdns is setup by default but on Linux you may need to do some configuration (but the details are not covered in this doc).
+
+For nerves you should follow the mdns_lite instructions: https://hexdocs.pm/mdns_lite/readme.html#dns-bridge-configuration
+
+## Usage
 
 ```elixir
 devices = Keylight.discover()
