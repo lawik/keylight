@@ -1,15 +1,19 @@
 # Keylight
 
+Keylight is an elixir api to control the [Elgato Key Light](https://www.elgato.com/en/key-light) and [Key Light Mini](https://www.elgato.com/en/key-light-mini).
+
+Features:
 - Discovery
 - Changing settings
-- NOT initial setup
 
-Add to deps, not currently on hex:
+Note: Does NOT support initial setup
+
+Add keylight to your deps (it is not currently on hex):
 
 ```elixir
 def deps do
   [
-    {:keylight, github: "lawik/keylight"}
+    {:keylight, github: "lawik/keylight"},
   ]
 end
 ```
