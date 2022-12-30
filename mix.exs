@@ -21,7 +21,7 @@ defmodule Keylight.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:mdns_lite, github: "nerves-networking/mdns_lite", branch: "optional-vintage_net"},
+      {:mdns_lite, "~> 0.8.6"},
       {:jason, "~> 1.2"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
