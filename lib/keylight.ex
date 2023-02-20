@@ -96,6 +96,7 @@ defmodule Keylight do
 
   defp multi(devices, fun) do
     devices
+    |> Enum.sort()
     |> Enum.map(fn {key, value} ->
       {key, fun.(value)}
     end)
