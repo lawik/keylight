@@ -20,7 +20,7 @@ defmodule Keylight do
   @default_timeout 2000
   def discover(timeout \\ @default_timeout) do
     query_mdns()
-    :timer.sleep(@default_timeout)
+    :timer.sleep(timeout)
     case check_mdns() do
       %{additional: []} -> %{}
       %{additional: records} -> records_to_devices(records)
@@ -106,6 +106,7 @@ defmodule Keylight do
 
   defp multi(devices, fun) do
     devices
+    |> Enum.sort()
     |> Enum.map(fn {key, value} ->
       {key, fun.(value)}
     end)
