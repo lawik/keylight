@@ -18,6 +18,24 @@ defmodule Keylight do
     end
   end
 
+  @doc """
+  Build a Keylight by a known IP
+
+  Use this if you've assigned a static IP address to your Keylight device
+
+  Example usage:
+
+      iex> Keylight.build_by_ip("192.168.1.19")
+      %{name: "Key Light", port: 9123, host: "192.168.1.19"}
+  """
+  def build_by_ip(ip_address, port \\ 9123) when is_binary(ip_address) do
+    %{
+      name: "Key Light #{ip_address}",
+      port: port,
+      host: ip_address
+    }
+  end
+
   defp records_to_devices(records) do
     records
     |> Enum.map(fn record ->
