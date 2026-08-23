@@ -5,31 +5,56 @@ defmodule Keylight do
 
   require MdnsLite.DNS
 
-  @query_devices MdnsLite.DNS.dns_query(class: :in, type: :ptr, domain: '_elg._tcp.local')
+  @query_devices MdnsLite.DNS.dns_query(class: :in, type: :ptr, domain: ~c"_elg._tcp.local")
   @default_timeout 2000
 
   def discover(timeout \\ @default_timeout) do
     query_mdns()
     :timer.sleep(timeout)
+
     case check_mdns() do
       %{additional: []} -> %{}
       %{additional: records} -> records_to_devices(records)
     end
   end
 
+  @doc """
+  Build a Keylight by a known IP
+
+  Use this if you've assigned a static IP address to your Keylight device
+
+  Example usage:
+
+      iex> Keylight.build_by_ip("192.168.1.19")
+      %{name: "Key Light", port: 9123, host: "192.168.1.19"}
+  """
+  def build_by_ip(ip_address, port \\ 9123) when is_binary(ip_address) do
+    %{
+      name: "Key Light #{ip_address}",
+      port: port,
+      host: ip_address
+    }
+  end
+
   defp records_to_devices(records) do
     records
     |> Enum.map(fn record ->
       {:dns_rr, identifier, record_type, _, _, _, contents, _, _, _} = record
+
       case record_type do
-        :srv -> {to_string(identifier), %{host: srv_to_host(contents), port: srv_to_port(contents)}}
-        :txt -> {to_string(identifier), %{name: txt_to_name(contents)}}
+        :srv ->
+          {to_string(identifier), %{host: srv_to_host(contents), port: srv_to_port(contents)}}
+
+        :txt ->
+          {to_string(identifier), %{name: txt_to_name(contents)}}
       end
     end)
     |> Enum.reduce(%{}, fn {key, data}, acc ->
-      d = acc
-          |> Map.get(key, %{})
-          |> Map.merge(data)
+      d =
+        acc
+        |> Map.get(key, %{})
+        |> Map.merge(data)
+
       Map.put(acc, key, d)
     end)
   end
@@ -68,19 +93,21 @@ defmodule Keylight do
 
   @options [:on, :brightness, :temperature]
   def set(%{host: _} = device, opts) do
-    data = opts
-          |> Enum.map(fn {key, value} ->
-            if key in @options do
-              if is_integer(value) do
-                {to_string(key), value}
-              else
-                raise "Bad value #{value} for option '#{key}', should be an integer"
-              end
-            else
-              raise "Bad option '#{key}'"
-            end
-          end)
-          |> Map.new()
+    data =
+      opts
+      |> Enum.map(fn {key, value} ->
+        if key in @options do
+          if is_integer(value) do
+            {to_string(key), value}
+          else
+            raise "Bad value #{value} for option '#{key}', should be an integer"
+          end
+        else
+          raise "Bad option '#{key}'"
+        end
+      end)
+      |> Map.new()
+
     put(device, "elgato/lights", %{"numberOfLights" => 1, "lights" => [data]})
   end
 
@@ -114,7 +141,7 @@ defmodule Keylight do
     :inets.start()
     url = build_url(device, path)
     body = Jason.encode!(data)
-    {:ok, {_, _, body}} = :httpc.request(:put, {url, [], 'application/json', body}, [], [])
+    {:ok, {_, _, body}} = :httpc.request(:put, {url, [], ~c"application/json", body}, [], [])
     Jason.decode(to_string(body))
   end
 
@@ -127,7 +154,9 @@ defmodule Keylight do
       String.starts_with?(to_string(p), "md=")
     end)
     |> case do
-      nil -> "Unnamed"
+      nil ->
+        "Unnamed"
+
       name ->
         "md=" <> name = to_string(name)
         name
